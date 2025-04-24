@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lofi Terminal - Interactive Story</title>
+  <style>
+    body { background-color: black; color: lime; font-family: 'Courier New', monospace; }
+    .terminal { font-size: 20px; line-height: 1.5; white-space: pre-wrap; }
+    #input-container { margin-top: 10px; }
+    input { background-color: black; color: lime; border: none; outline: none; font-size: 20px; width: 100%; }
+    input:focus { border: none; outline: none; }
+    .button { background-color: lime; color: black; padding: 10px; border: none; margin: 5px; cursor: pointer; }
+    .button:hover { background-color: green; }
+  </style>
+</head>
+<body>
+  <div class="terminal" id="terminal">
+    <p>> Welcome to Lofi Terminal v1.0</p>
+    <p>> Type 'help' to begin.</p>
+  </div>
+
+  <div id="input-container">
+    <input type="text" id="userInput" placeholder="Type a command" autofocus />
+  </div>
+
+  <div id="options-container"></div>
+
+  <script>
+    const inputField = document.getElementById('userInput');
+    const terminal = document.getElementById('terminal');
+    const optionsContainer = document.getElementById('options-container');
+    
+    // Function to append new text to the terminal
+    function appendToTerminal(text) {
+      const p = document.createElement('p');
+      p.textContent = text;
+      terminal.appendChild(p);
+      terminal.scrollTop = terminal.scrollHeight; // Scroll to the latest text
+    }
+
+    // Function to speak text (TTS)
+    function speak(text) {
+      const speech = new SpeechSynthesisUtterance(text);
+      speech.volume = 1;
+      speech.rate = 1;
+      speech.pitch = 1;
+      window.speechSynthesis.speak(speech);
+    }
+
+    // Function to play sound
+    function playSound(soundFile) {
+      const audio = new Audio(soundFile);
+      audio.play();
+    }
+
+    // Command handling function
+    function handleInput(input) {
+      const command = input.trim().toLowerCase();
+
+      if (command === "help") {
+        appendToTerminal("Commands available: story.start, team.debate, option.1, option.2");
+        speak("Commands available: story.start, team.debate, option.1, option.2");
+      }
+      else if (command === "story.start") {
+        startStory();
+      }
+      else if (command === "team.debate") {
+        teamDebate();
+      }
+      else if (command === "option.1") {
+        trustAlly();
+      }
+      else if (command === "option.2") {
+        distrustAlly();
+      }
+      else {
+        appendToTerminal("Unknown command. Type 'help' for options.");
+        speak("Unknown command. Type 'help' for options.");
+      }
+    }
+
+    // Story start function
+    function startStory() {
+      appendToTerminal("You are Alex, a hero with speed and invisibility powers. One night, you hear noises from an alley...");
+      speak("You are Alex, a hero with speed and invisibility powers. One night, you hear noises from an alley...");
+      playSound("footsteps.mp3");
+
+      appendToTerminal("You rush over and find Maya, unconscious, thrown into the sea. You dive in and save her.");
+      speak("You rush over and find Maya, unconscious, thrown into the sea. You dive in and save her.");
+      playSound("water_splash.mp3");
+
+      showOptions([
+        { text: "Option 1: Save Maya now", command: "option.1" },
+        { text: "Option 2: Wait and gather info", command: "option.2" }
+      ]);
+    }
+
+    // Function to trigger team debate
+    function teamDebate() {
+      appendToTerminal("Maya: I don’t know if we can trust them. They’ve been quiet for too long.");
+      speak("Maya: I don’t know if we can trust them. They’ve been quiet for too long.");
+      playSound("suspense_music.mp3");
+
+      appendToTerminal("Alex: We have to give them a chance. This could be the help we need.");
+      speak("Alex: We have to give them a chance. This could be the help we need.");
+      playSound("heartbeat.mp3");
+
+      appendToTerminal("Ashley: It’s not about trust. It’s about survival. We need to take risks.");
+      speak("Ashley: It’s not about trust. It’s about survival. We need to take risks.");
+      playSound("tech_tap.mp3");
+
+      appendToTerminal("What will you do?");
+      speak("What will you do?");
+      playSound("decision_time.mp3");
+
+      showOptions([
+        { text: "Option 1: Trust the ally and work with them", command: "option.1" },
+        { text: "Option 2: Keep your distance and gather more info", command: "option.2" }
+      ]);
+    }
+
+    // Function when the user chooses Option 1 (Trust the ally)
+    function trustAlly() {
+      appendToTerminal("Alex: We’re in this together. I trust you.");
+      speak("Alex: We’re in this together. I trust you.");
+      playSound("team_join.mp3");
+
+      appendToTerminal("The new ally joins the team.");
+      speak("The new ally joins the team.");
+      playSound("ally_entrance.mp3");
+
+      appendToTerminal("Maya: We’ll see if you’re as reliable as you say.");
+      speak("Maya: We’ll see if you’re as reliable as you say.");
+      playSound("water_splash.mp3");
+
+      clearOptions();
+    }
+
+    // Function when the user chooses Option 2 (Distrust the ally)
+    function distrustAlly() {
+      appendToTerminal("Maya: We’re not trusting anyone new until we know more.");
+      speak("Maya: We’re not trusting anyone new until we know more.");
+      playSound("wind_whistle.mp3");
+
+      appendToTerminal("Ashley: I agree. We need to be cautious.");
+      speak("Ashley: I agree. We need to be cautious.");
+      playSound("suspense_music.mp3");
+
+      appendToTerminal("The ally watches from a distance, unsure of the team’s trust.");
+      speak("The ally watches from a distance, unsure of the team’s trust.");
+      playSound("lonely_echo.mp3");
+
+      clearOptions();
+    }
+
+    // Function to show clickable options
+    function showOptions(options) {
+      optionsContainer.innerHTML = ''; // Clear previous options
+      options.forEach(option => {
+        const button = document.createElement('button');
+        button.textContent = option.text;
+        button.className = 'button';
+        button.onclick = function() {
+          handleInput(option.command);
+          clearOptions(); // Clear options after selection
+        };
+        optionsContainer.appendChild(button);
+      });
+    }
+
+    // Function to clear options
+    function clearOptions() {
+      optionsContainer.innerHTML = '';
+    }
+
+    // Event listener for the input field
+    inputField.addEventListener('keypress', function(event) {
+      if (event.key === 'Enter') {
+        const input = inputField.value.trim();
+        appendToTerminal("> " + input);
+        handleInput(input);
+        inputField.value = "";
+      }
+    });
+
+  </script>
+</body>
+</html>
